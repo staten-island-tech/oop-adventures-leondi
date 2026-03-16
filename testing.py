@@ -53,8 +53,13 @@ def gamblingbutbetter(quar, playslist):
     print("die")
 # gamblingbutbetter(77, [4, 9, 3])
 
-def voronivil (villagelist):
-    n = villagelist.len
-    
-
-voronivil([5,16, 0, 10, 4, 15])
+def mathteambutworsebccs(villages):
+    print(villages)
+    villages.sort()
+    print(villages)
+    resls = []
+    for i in villages[1: -1]:
+        neigboerhood = (villages[villages.index(i)-1] + villages[villages.index(i)+1])/2
+        resls.append(neigboerhood)
+    print(min(resls))
+mathteambutworsebccs([16, 0, 10, 4, 15])
