@@ -1,4 +1,5 @@
 import time
+cheddarstore = False
 items_held = [
     {
         "buns": 8,
@@ -50,46 +51,57 @@ class player:
             print(f"You can eat {", ".join(availabe_eat)}.")
         elif len(availabe_eat) <= 1:
             print(f"You can eat some {availabe_eat[0]}.")
-            food_chosen = input("What food would you like to eat? ")
-            if guard(availabe_eat, food_chosen):
-                if food_chosen == "Instant Noodles":
-                    print("You take the noodles out of their packaging.")
-                    time.sleep(2)
-                    print("You set the water to a boil.")
-                    time.sleep(2)
-                    print("...")
-                    time.sleep(2)
-                    print("...")
-                    time.sleep(2)
-                    print("...")
-                    time.sleep(2)
-                    print("It's boiling.")
-                    print("You put the noodles in the water.")
-                    time.sleep(2)
-                    print("...")
-                    time.sleep(2)
-                    print("...")
-                    time.sleep(2)
-                    print("...")
-                    time.sleep(2)
-                    print("You take the noodles out of the water.")
-                    time.sleep(2)
-                    print("You put the seasoning into the noodles.")
-                    time.sleep(2)
-                    if self.stamina > 100:
-                        print(f"You eat the noodles. It doesn't matter though, you were already full stamina...")
-                    else:
-                        print(f"You eat the {food_chosen}.")
-                        self.stamina += items_held[1][food_chosen]["stamina recovered"]
-                        print(f"You're {items_held[1][food_chosen]["stamina recovered"]}% less tired. ",
-                          f"You now have {self.stamina}% stamina. You only have {items_held[1][food_chosen]["count"]} {food_chosen} now.")
+        food_chosen = input("What food would you like to eat? ")
+        if guard(availabe_eat, food_chosen):
+            if food_chosen == "Instant Noodles":
+                print("You take the noodles out of their packaging.")
+                time.sleep(2)
+                print("You set the water to a boil.")
+                time.sleep(2)
+                print("...")
+                time.sleep(2)
+                print("...")
+                time.sleep(2)
+                print("...")
+                time.sleep(2)
+                print("It's boiling.")
+                print("You put the noodles in the water.")
+                time.sleep(2)
+                print("...")
+                time.sleep(2)
+                print("...")
+                time.sleep(2)
+                print("...")
+                time.sleep(2)
+                print("You take the noodles out of the water.")
+                time.sleep(2)
+                print("You put the seasoning into the noodles.")
+                time.sleep(2)
+                if self.stamina >= 100:
+                    items_held[1][food_chosen]["count"] -= 1
+                    print(f"You eat the noodles. It doesn't matter though, you were already full stamina...")
                 else:
-                    print(f"You eat the {food_chosen}.")
+                    print(f"You eat some {food_chosen}.")
                     self.stamina += items_held[1][food_chosen]["stamina recovered"]
-                    print(f"You're {items_held[1][food_chosen]["stamina recovered"]}% less tired. ",
-                          f"You now have {self.stamina}% stamina. You only have {items_held[1][food_chosen]["count"]} {food_chosen} now.")
+                    items_held[1][food_chosen]["count"] -= 1
+                    print(f"You're {items_held[1][food_chosen]["stamina recovered"]}% less tired.",
+                    f" You now have {self.stamina}% stamina. You only have {items_held[1][food_chosen]["count"]} {food_chosen} now.")
             else:
-                print("bad")
-        print()
+                if self.stamina >= 100:
+                    items_held[1][food_chosen]["count"] -= 1
+                    print(f"You eat some {food_chosen}. It doesn't matter though, you were already full stamina...")
+                else:
+                    print(f"You eat some {food_chosen}.")
+                    self.stamina += items_held[1][food_chosen]["stamina recovered"]
+                    items_held[1][food_chosen]["count"] -= 1
+                    print(f"You're {items_held[1][food_chosen]["stamina recovered"]}% less tired. ",
+                    f"You now have {self.stamina}% stamina. You only have {items_held[1][food_chosen]["count"]} {food_chosen} now.")
+        else:
+            print("invalid")
+    def foodstore(self, money):
+        if cheddarstore == False:
+            print("You go to the grocery store.")
+            for i in items_held[1]:
+                
 user = player(iname, 100, 100)
 player.eat(user)
