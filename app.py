@@ -9,31 +9,32 @@ items_held = [
         "ketchup packets": 20,
         "mustard packets": 0,
     },
-    {
-        "A5 Wagyu": {
+    [
+        {
             "name": "A5 Wagyu",
             "stamina recovered": 30,
             "count": 0,
             "price": 50,
         },
-        "Kraft Mac & Cheese": {
+        {
             "name": "Kraft Mac & Cheese",
             "stamina recovered": 20,
             "count": 0,
             "price": 30,
         },
-        "Instant Noodles": {
+        {
             "name": "Instant Noodles",
             "stamina recovered": 10,
             "count": 5,
             "price": 15,
         },
-        "Magic Money Cheddar": {
+        {
             "name": "Magic Money Cheddar",
             "stamina recovered": -15,
             "count": 0,
+            "price": 100,
         },
-    },
+    ],
 ]
 def guard(valid_choices, inputvar):
     if inputvar not in valid_choices:
@@ -105,41 +106,47 @@ class player:
             print("invalid")
     def foodstore(self):
         global brokecontinue
+        brokecontinue = "o"
         totalcost = 0
-        if cheddarstore == False:
-            if brokecontinue != "y":
-                print("You go to the grocery store.")
-            for i in items_held[1]:
-                try:
-                    select = input(f"Do you want to buy any {items_held[1][i]["name"]}? (cost: ${items_held[1][i]["price"]}) (y/n) ")
-                except KeyError:
-                    break
-                if guard(["y", "n"], select) and select == "y":
-                    try:
-                        foodnum = int(input(f"How many {items_held[1][i]["name"]} do you want? "))
-                    except ValueError:
-                        print("invalid")
-                        break 
-                    totalcost += items_held[1][i]["price"]*foodnum
-                    if totalcost > self.money:
-                        print("You can't buy that, you're too broke! ")
-                        brokecontinue = input("Do you want to keep shopping? (y/n) ")
-                        if brokecontinue == "y" and guard(["y", "n"], brokecontinue):
-                            player.foodstore(user)
-                        elif guard(["y", "n"], brokecontinue) == False:
+        if brokecontinue != "y" and cheddarstore == False:
+            print("You go to the grocery store.")
+        elif cheddarstore:
+            store = input("Do you want to go to the cheddar dealer or the grocery store? (1/2) ")
+            if guard([1, 2], store):
+                if store == 1:
+                    for i in range(3):
+                        select = input(f"Do you want to buy any {items_held[1][i]["name"]}? (cost: ${items_held[1][i]["price"]}) (y/n) ")
+                        if guard(["y", "n"], select) and select == "y":
+                            try:
+                                foodnum = int(input(f"How many {items_held[1][i]["name"]} do you want? "))
+                            except ValueError:
+                                print("invalid")
+                                player.foodstore(user) 
+                            totalcost += items_held[1][i]["price"]*foodnum
+                            if totalcost > self.money:
+                                print(f"You can't buy that, you're too broke! (only ${self.money}, cost is ${totalcost})")
+                                brokecontinue = input("Do you want to keep shopping? (y/n) ")
+                                if brokecontinue == "y" and guard(["y", "n"], brokecontinue):
+                                    player.foodstore(user)
+                                elif guard(["y", "n"], brokecontinue) == False:
+                                    print("invalid")
+                                    player.foodstore(user) 
+                                else:
+                                    break
+                            else:
+                                items_held[1][i]["count"] += foodnum
+                        elif guard(["y", "n"], select) == False:
                             print("invalid")
-                            break 
-                        else:
-                            break
-                    else:
-                        items_held[1][i]["count"] += foodnum
-                elif guard(["y", "n"], select) == False:
-                    print("invalid")
-                    break
-            self.money -= totalcost
-            print(f"Your total is ${totalcost}.")
-            for i in items_held[1]:
-                if items_held[1][i]["count"] > 0:
-                    print(f"You now have {items_held[1][i]["count"]} {items_held[1][i]["name"]}.")
+                            player.foodstore(user)
+                    if brokecontinue != "n":
+                        self.money -= totalcost
+                        print(f"Your total is ${totalcost}.")
+                        print(f"Now you only have ${self.money}.")
+                        for i in range(3):
+                            if items_held[1][i]["count"] > 0:
+                                print(f"You now have {items_held[1][i]["count"]} {items_held[1][i]["name"]}.")
+            else:
+                print("invalid")
+                player.foodstore(user)
 user = player(iname, 100, 100)
 user.foodstore()
