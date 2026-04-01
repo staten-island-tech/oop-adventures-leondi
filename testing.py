@@ -38,16 +38,39 @@ for ward, list in wards.items():
 print(staff)
  """
 phonenum = {
-    2: ["a", "b", "c"],
-    3: ["d", "e", "f"],
-    4: ["g", "h", "i"],
-    5: ["j", "k", "l"],
-    6: ["m", "n", "o"],
-    7: ["p", "q", "r", "s"],
-    8: ["t", "u", "v"],
-    9: ["w", "x", "y", "z"]
+    "a": 2,
+    "b": 2,
+    "c": 2,
+    "d": 3,
+    "e": 3,
+    "f": 3,
+    "g": 4,
+    "h": 4,
+    "i": 4,
+    "j": 5,
+    "k": 5,
+    "l": 5,
+    "m": 6,
+    "n": 6,
+    "o": 6,
+    "p": 7,
+    "q": 7, 
+    "r": 7,
+    "s": 7,
+    "t": 8,
+    "u": 8,
+    "v": 8,
+    "w": 9, 
+    "x": 9, 
+    "y": 9,
+    "z": 9,
 }
 def marko(wordlist, nums_input):
+    badword = []
     for word in wordlist:
-        for letter in range(len(word)):
-            if letter in phonenum[nums_input]
+        thing = [*word]
+        for char in range(len(thing)):
+            if phonenum[word[char]] != nums_input[char]:
+                badword.append(word)
+    print(badword)
+marko(["tomo","mono","dak"], [6, 6,6,6])
