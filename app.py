@@ -15,6 +15,8 @@ captured = None
 alias_first = ["John", "Bob", "James"]
 alias_last = ["Smith", "Brown", "Johnson"]
 class Operative:
+    global captured
+    captured = None
     def __init__(self, name, num, type, phys_stat, tech_stat, stlh_stat, chrsm_stat, unlocked_list):
         self.name = name
         self.num = num
@@ -62,7 +64,6 @@ class Operative:
             chance = (((self.phys_stat*0.1)-0.05) + (self.tech_stat*0.1)-0.05)/2
             if chance >= random.random():
                 print(f"{self.name} attempts to gun down the guards... their shots hit clean! {team_name} quickly scramble into the bunker and lock the door behind them.")
-                pr -= 10
                 print(f"Turns out the {self.name} was {self.phys_stat}/10 skilled in physical capabilities and {self.tech_stat}/10 skilled in technical capabilities.")
                 if chance+0.05 >= random.random() and self.tech_stat < 10:
                     self.tech_stat += 1
@@ -81,15 +82,17 @@ class Operative:
                           f"The guards were alerted and the alarm sounded. In the process, {self.name} was killed!")
                 print(f"However, thanks to {self.name}'s sacrifice, the crew is able to gun down the remaining soldiers and sneak into the bunker. ")
     def mole(self):
+        global captured
         print(f"You have chosen your {self.type}, {self.name} to be your mole." \
               f" They apply to be a guard at the bunker under the alias {alias_first[random.randint(0, 2)]} {alias_last[random.randint(0,2)]}. ")
         chance = (((self.chrsm_stat*0.1)-0.05) + ((self.stlh_stat*0.1)-0.05))/2
         if chance < random.random():
             talk_c = input(f"{self.type} is under suspicion of being a spy! Do they attempt to smooth talk out of the situation? (y/n) ")
             if talk_c == "y":
-                if chance < random.random():
+                if chance > random.random():
+                    print(chance)
                     print("The enemy belived it!")
-                    if not self.unlocked_list[3]:
+                    if self.unlocked_list[3] == False:
                         print(f"Turns out {self.name}'s charisma was {self.chrsm_stat}/10.")
                         self.unlocked_list[3] = True
                     print(f"{self.name} successfully infiltrated the bunker!")
@@ -99,32 +102,55 @@ class Operative:
                     self.unlocked_list[3] = True
                     print(f"{self.name}'s talking made him even more suspicious! The enemy placed them in prison! You'll have to rescue them later, or leave them there. ")
                     operative_list.remove(self)
-                    captured = self
+                    captured = operative_list[int(self.num)-1]
                     print("While the whole bunker is distracted trying to get information out of your spy, the rest of the crew is able to sneak in!")
             elif talk_c == "n":
                 operative_list.remove(self)
-                captured = self
-                print(captured)
+                captured = operative_list[int(self.num)-1]
                 print(f"{self.name}'s lack of explanation put them under suspicion even more! The enemy placed them in prison! You'll have to rescue them later, or leave them there. ")
                 print("While the whole bunker is distracted trying to get information out of your spy, the rest of the crew is able to sneak in!")
         else:
             print(f"{self.name} successfully infiltrated the bunker!")
+            if self.unlocked_list[3] == False:
+                print(f"Turns out {self.name}'s charisma was {self.chrsm_stat}/10.")
+                self.unlocked_list[3] = True
             print(f"{team_name} sneak into the bunker undercover as a new cleaning crew. They're in!")
     def bunchack(self):
         print(f"You have chosen your {self.type}, {self.name} to hack into the vault.")
-        chance = (self.chrsm_stat*0.1)-0.05
+        if captured != None:
+            print(f"Currently, {captured.name} is captured in the enemy's prison. Rescuing them requires opening the prsion door via hack. This will take some time and skills, and you can risk being found.")
+            rescuechoice = input(f"Should {self.name} attempt to break out {captured.name}? (y/n) ")   
+            if rescuechoice == "y":
+                self.breakout()     
+        chance = (self.tech_stat*0.1)-0.05
         if chance < random.random():
             print(f"{self.name} attempts to breach the firewall... they fail! The enemy instantly locks onto their location and eliminates them. {self.name} died!")
             operative_list.remove(self)
         else:
             print(f"{self.name} successfully hacked into the vault!")
             if not self.unlocked_list[1]:
-                print(f"Turns out {self.name}'s is {self.chrsm_stat}/10 skilled in technical skills.")
+                print(f"Turns out {self.name}'s is {self.tech_stat}/10 skilled in technical skills.")
                 self.unlocked_list[1] = True
             if chance+0.05 >= random.random() and self.tech_stat < 10:
                 self.tech_stat += 1
                 print(f"Thanks to the experience, {self.name}'s technical skills increased to {self.tech_stat}!")
             print(f"{team_name} are in the bunker! They copy the codes onto a hard drive and destroy the server room with a grenade. The whole bunker is alerted! ")
+    def breakout(self):
+        chance = (self.tech_stat*0.1)-0.05
+        if chance < random.random():
+            print(f"{self.name} attempts to open the prison door... they fail! The enemy tracked their computer and found the entire crew and captured them!")
+            print("FAILED")
+            quit()
+        else:
+            print(f"{self.name} successfully hacked in the prison and opened the door, allowing the prisoner to escape!")
+            operative_list.append(captured)
+            captured = None
+            if not self.unlocked_list[1]:
+                print(f"Turns out {self.name}'s is {self.tech_stat}/10 skilled in technical skills.")
+                self.unlocked_list[1] = True
+            if chance+0.05 >= random.random() and self.tech_stat < 10:
+                self.tech_stat += 1
+                print(f"Thanks to the experience, {self.name}'s technical skills increased to {self.tech_stat}!")
 def alive_select():
     if len(operative_list) == 1:
         return "(1) "
@@ -154,7 +180,7 @@ if bunk_choice == "1":
             person.skills_showcase(1)
         char_choice = input(f"Who should throw the flash? {alive_select()}")
         for person in operative_list: 
-            if person.num == char_choice:
+            if operative_list.index(person)+1 == int(char_choice):
                 person.guard_act()
     elif flashvar == "2":
         print("You'll probably need someone highly skilled in phyiscal and technical to succesfully take out the guards.")
@@ -163,7 +189,7 @@ if bunk_choice == "1":
             person.skills_showcase(2)
         char_choice = input(f"Who should attempt to gun down the guards? {alive_select()}")
         for person in operative_list: 
-            if person.num == char_choice:
+            if operative_list.index(person)+1 == int(char_choice):
                 person.guard_act()
 elif bunk_choice == "2":
     print("You have chosen to breach the bunker by infiltrating it. Your mission will consist of 1) Planting an inside man to allow your other operatives to sneak in. ",
@@ -174,7 +200,7 @@ elif bunk_choice == "2":
         person.skills_showcase(4)
     ins_char = input(f"Who should be the mole? {alive_select()}")
     for person in operative_list: 
-        if person.num == ins_char:
+        if operative_list.index(person)+1 == int(ins_char):
             person.mole()
     if captured == None:
         print("Now that the crew is in, you'll have to hack into the secure vault with the codes. Someone who is highly skilled in tech is perfect for this.")
@@ -182,5 +208,5 @@ elif bunk_choice == "2":
         person.skills_showcase(2)
     ins_char = input(f"Who should hack into the system? {alive_select()}")
     for person in operative_list: 
-        if person.num == ins_char:
+        if operative_list.index(person)+1 == int(ins_char):
             person.bunchack()
