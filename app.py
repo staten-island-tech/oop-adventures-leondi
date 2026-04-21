@@ -79,6 +79,28 @@ class Operative:
                     print(f"{self.name} attempts to gun down the guards... thanks to their poor physical skills, they miss most of the shots! " \
                           f"The guards were alerted and the alarm sounded. In the process, {self.name} was killed!")
                 print(f"However, thanks to {self.name}'s sacrifice, the crew is able to gun down the remaining soldiers and sneak into the bunker. ")
+    def codeget(self):
+            chance = (((self.chrsm_stat*0.1)-0.05) + ((self.phys_stat*0.1)-0.05))/2
+            if chance > random.random():
+                code = random.randint(1000,9999)
+                print(f"{self.name} is successful in getting the code from the worker he interrogated! The code is {code}.")
+                if self.unlocked_list[0] == False:
+                    print(f"Turns out {self.name}'s charisma was {self.phys_stat}/10.")
+                    self.unlocked_list[0] = True
+                if self.unlocked_list[3] == False:
+                    print(f"Turns out {self.name}'s stealth was {self.chrsm_stat}/10.")
+                    self.unlocked_list[3] = True
+                self.unlocked_list[1] = True
+                if chance+0.05 >= random.random() and self.chrsm_stat < 10:
+                    self.chrsm_stat += 1
+                    print(f"Thanks to the experience, {self.name}'s charisma skills increased to {self.chrsm_stat}!")
+            else:
+                print(f"{self.name} takes too long to interrogate the employee and the crew is caught and captured. ")
+                print("FAILED")
+                quit()
+    def vualtentry(self):
+        code_input = input("What is the code? ")
+        print("The team enters the vault. They copy down the codes onto a drive and destroy the originals. ")
     def mole(self):
         print(f"You have chosen your {self.type}, {self.name} to be your mole." \
               f" They apply to be a guard at the bunker under the alias {alias_first[random.randint(0, 2)]} {alias_last[random.randint(0,2)]}. ")
@@ -91,11 +113,18 @@ class Operative:
                     if self.unlocked_list[3] == False:
                         print(f"Turns out {self.name}'s charisma was {self.chrsm_stat}/10.")
                         self.unlocked_list[3] = True
+                    if self.unlocked_list[2] == False:
+                        print(f"Turns out {self.name}'s stealth was {self.stlh_stat}/10.")
+                        self.unlocked_list[2] = True
                     print(f"{self.name} successfully infiltrated the bunker!")
                     print(f"{team_name} sneaks into the bunker undercover as a new cleaning crew. They're in!")
                 else:
-                    print(f"Turns out {self.name}'s charisma was {self.chrsm_stat}/10.")
-                    self.unlocked_list[3] = True
+                    if self.unlocked_list[3] == False:
+                        print(f"Turns out {self.name}'s charisma was {self.chrsm_stat}/10.")
+                        self.unlocked_list[3] = True
+                    if self.unlocked_list[2] == False:
+                        print(f"Turns out {self.name}'s stealth was {self.stlh_stat}/10.")
+                        self.unlocked_list[2] = True
                     print(f"{self.name}'s talking made him even more suspicious! The enemy placed them in prison! You'll have to rescue them later, or leave them there. ")
                     self.captured = True
                     print("While the whole bunker is distracted trying to get information out of your spy, the rest of the crew is able to sneak in!")
@@ -108,6 +137,9 @@ class Operative:
             if self.unlocked_list[3] == False:
                 print(f"Turns out {self.name}'s charisma was {self.chrsm_stat}/10.")
                 self.unlocked_list[3] = True
+            if self.unlocked_list[2] == False:
+                print(f"Turns out {self.name}'s stealth was {self.stlh_stat}/10.")
+            self.unlocked_list[2] = True
             print(f"{team_name} sneak into the bunker undercover as a new cleaning crew. They're in!")
     def bunchack(self):
         print(f"You have chosen your {self.type}, {self.name} to hack into the vault.")
@@ -203,14 +235,36 @@ if bunk_choice == "1":
         for person in operative_list: 
             if operative_list.index(person)+1 == int(char_choice):
                 person.guard_act()
+    print(f"{team_name} are in the bunker. They'll have to get the code for the vault from one of the personnel, or attempt to hack in the vault. ")
+    code_choice = input("Should the team attempt to get the code themselves or hack into the vault? (1/2) ")
+    if code_choice == "1":
+        print("Someone who is intimidating should be best to get the code from one of the personnel (high charisma + physical).")
+        for person in operative_list:
+            if person.captured == False:
+                person.skills_showcase(1)
+                person.skills_showcase(4)
+        pers_choice = input(f"Who should attempt the task? {alive_select()}")
+        for person in operative_list: 
+            if operative_list.index(person)+1 == int(pers_choice):
+                person.codeget()
+    elif code_choice == "2":
+        print("You'll have to hack into the secure vault with the codes. Someone who is highly skilled in tech is perfect for this.")
+        for person in operative_list:
+            if person.captured == False:
+                person.skills_showcase(2)
+        ins_char = input(f"Who should hack into the system? {alive_select()}")
+        for person in operative_list: 
+            if operative_list.index(person)+1 == int(ins_char):
+                person.bunchack()
 elif bunk_choice == "2":
     print("You have chosen to breach the bunker by infiltrating it. Your mission will consist of 1) Planting an inside man to allow your other operatives to sneak in. ",
-          "2) Hack into the vualt with the codes to open the door. ",
+          "2) Hack into the vault with the codes to open the door. ",
           "3) Retrive the nuclear codes. ")
-    print("First, you'll have to plant a mole to be able to sneak past the intitial defenses. Someone with high charisma is ideal.")
+    print("First, you'll have to plant a mole to be able to sneak past the intitial defenses. Someone with high charisma and stealth is ideal.")
     for person in operative_list:
         if person.captured == False:
             person.skills_showcase(4)
+            person.skills_showcase(3)
     ins_char = input(f"Who should be the mole? {alive_select()}")
     for person in operative_list: 
         if operative_list.index(person)+1 == int(ins_char):
