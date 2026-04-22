@@ -1,5 +1,5 @@
 import random
-print("Welcome. You will have 4 highly trained operatives which you will have to direct across a mission.")
+print("Welcome. You will have 4 highly trained operatives which you will have to direct across a mission. Each one has a specific skillset that you will have to utilize.")
 hack_name = input("Each operative specializes in a certain field. " \
 "Your first operative will be the HACKER. They specialize in remote breaches of systems and providing digital assistance. " \
 "What should your HACKER's name be? ")
