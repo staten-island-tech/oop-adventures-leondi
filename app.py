@@ -80,6 +80,7 @@ class Operative:
                           f"The guards were alerted and the alarm sounded. In the process, {self.name} was killed!")
                 print(f"However, thanks to {self.name}'s sacrifice, the crew is able to gun down the remaining soldiers and sneak into the bunker. ")
     def codeget(self):
+            global code
             chance = (((self.chrsm_stat*0.1)-0.05) + ((self.phys_stat*0.1)-0.05))/2
             if chance > random.random():
                 code = random.randint(1000,9999)
@@ -100,7 +101,12 @@ class Operative:
                 quit()
     def vualtentry(self):
         code_input = input("What is the code? ")
-        print("The team enters the vault. They copy down the codes onto a drive and destroy the originals. ")
+        if code_input == code:
+            print("The team enters the vault. They copy down the codes onto a drive and destroy the originals. ")
+        else:
+            print("Because of your inability to memorize a 4 digit number, the entire crew gets captured. ")
+            print("FAILED")
+            quit()
     def mole(self):
         print(f"You have chosen your {self.type}, {self.name} to be your mole." \
               f" They apply to be a guard at the bunker under the alias {alias_first[random.randint(0, 2)]} {alias_last[random.randint(0,2)]}. ")
@@ -152,6 +158,7 @@ class Operative:
         chance = (self.tech_stat*0.1)-0.05
         if chance < random.random():
             print(f"{self.name} attempts to breach the firewall... they fail! The enemy instantly locks onto their location and eliminates them. {self.name} died!")
+            print(f"Instead, the team chooses to blow up the vualt with c4 and destroy the codes altogether.")
             operative_list.remove(self)
         else:
             print(f"{self.name} successfully hacked into the vault!")
@@ -179,6 +186,16 @@ class Operative:
             if chance+0.05 >= random.random() and self.tech_stat < 10:
                 self.tech_stat += 1
                 print(f"Thanks to the experience, {self.name}'s technical skills increased to {self.tech_stat}!")
+    def escape(self):
+        print(f"You have chosen your {self.type}, {self.name} to pilot the heli. ")
+        chance = (self.tech_stat*0.1)-0.05
+        if chance < random.random():
+            print(f"{self.name} fails to pilot the heli properly and flies into a nearby mountain! The heli explodes and the whole crew dies. ")
+            print("FAILED")
+            quit()
+        else:
+            print(f"{self.name} is sucsesfull and the crew escapes!")
+            win()
 def ifcaptured():
     output = True
     for person in operative_list:
@@ -203,6 +220,15 @@ def alive_select():
         return "(1/2/3/4) "
     elif len(operative_list) == 4:
         return "(1/2/3) "
+def win():
+    ranklist = ["C", "B", "A", "S"]
+    numalive=0
+    for person in operative_list:
+        if person.captured==False:
+            numalive+=1
+    print(f"You have successfully completed the mission. Your rank is {ranklist[numalive-1]}.")
+    print("WIN!")
+    quit()
 hacker = Operative(hack_name, "1",  "HACKER", random.randint(2, 5), random.randint(6, 8), random.randint(3, 5), random.randint(2, 6), [False, False, False, False], False)
 special_op = Operative(ops_name, "2", "SPECIAL OP", random.randint(6, 8), random.randint(3, 6), random.randint(4, 6), random.randint(1, 3), [False, False, False, False], False)
 saboteur = Operative(sab_name, "3", "SABOTEUR", random.randint(3, 5), random.randint(1, 3), random.randint(6, 8), random.randint(5, 7), [False, False, False, False], False)
@@ -247,6 +273,7 @@ if bunk_choice == "1":
         for person in operative_list: 
             if operative_list.index(person)+1 == int(pers_choice):
                 person.codeget()
+        person.vualtentry()
     elif code_choice == "2":
         print("You'll have to hack into the secure vault with the codes. Someone who is highly skilled in tech is perfect for this.")
         for person in operative_list:
@@ -256,6 +283,14 @@ if bunk_choice == "1":
         for person in operative_list: 
             if operative_list.index(person)+1 == int(ins_char):
                 person.bunchack()
+    print("A small army of guards are chasing the team down! They escape to their helicopter. Someone with high technical skills will be best for this.")
+    for person in operative_list:
+        if person.captured == False:
+            person.skills_showcase(1)
+    helichoice = input(f"Who should attempt the task? {alive_select()}")
+    for person in operative_list: 
+        if operative_list.index(person)+1 == int(helichoice):
+            person.escape()
 elif bunk_choice == "2":
     print("You have chosen to breach the bunker by infiltrating it. Your mission will consist of 1) Planting an inside man to allow your other operatives to sneak in. ",
           "2) Hack into the vault with the codes to open the door. ",
@@ -277,3 +312,11 @@ elif bunk_choice == "2":
     for person in operative_list: 
         if operative_list.index(person)+1 == int(ins_char):
             person.bunchack()
+    print("A small army of guards are chasing the team down! They escape to their helicopter. Someone with high technical skills will be best for this.")
+    for person in operative_list:
+        if person.captured == False:
+            person.skills_showcase(2)
+    helichoice = input(f"Who should attempt the task? {alive_select()}")
+    for person in operative_list: 
+        if operative_list.index(person)+1 == int(helichoice):
+            person.escape()
