@@ -1,2 +1,2 @@
-x = input("a")
-print(type(x))
+from second import Operative
+print(Operative)
