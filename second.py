@@ -1,5 +1,8 @@
-""" from app import flashvar, team_name, operative_list, win """
 import random 
+from app import win, guard
+team_name = None
+flashvar = None
+operative_list = []
 class Operative:
     def __init__(self, name, num, type, phys_stat, tech_stat, stlh_stat, chrsm_stat, unlocked_list, captured):
         self.name = name
@@ -96,7 +99,7 @@ class Operative:
             quit()
     def mole(self):
         print(f"You have chosen your {self.type}, {self.name} to be your mole." \
-              f" They apply to be a guard at the bunker under the alias {alias_first[random.randint(0, 2)]} {alias_last[random.randint(0,2)]}. ")
+              f" They apply to be a guard at the bunker under the alias Bob Johnson. ")
         chance = (((self.chrsm_stat*0.1)-0.05) + ((self.stlh_stat*0.1)-0.05))/2
         if chance < random.random():
             talk_c = input(f"{self.type} is under suspicion of being a spy! Do they attempt to smooth talk out of the situation? (y/n) ")
